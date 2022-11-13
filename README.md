@@ -1,2 +1,2 @@
 # TodoList
-TodoList com VueJS
+TodoList com VueJS utilizando o Local Storage.
