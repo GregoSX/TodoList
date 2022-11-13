@@ -7,13 +7,16 @@
       >
         <b-form-input
           id="subject"
-          v-model="form.subject"
+          v-model.trim="$v.form.subject.$model"
           type="text"
           placeholder="Ex: lavar carro"
           required
           autocomplete="off"
+          :state="getValidation"
+          aria-describedby="subject-feedback"
         >
         </b-form-input>
+        <b-form-invalid-feedback id="subject-feedback">Campo obrigatório</b-form-invalid-feedback>
       </b-form-group>
       <b-form-group
         label="Descrição"
@@ -30,13 +33,14 @@
         </b-form-textarea>
       </b-form-group>
 
-      <b-button type="submit" variant="outline-primary" @click="saveTask"> Salvar </b-button>
+      <b-button type="submit" variant="outline-primary" @click="saveTask" :disabled="!getValidation"> Salvar </b-button>
     </b-form>
   </div>
 </template>
 
 <script>
   import toatMixin from '@/mixins/toatMixin.js'
+  import { required, minLength } from 'vuelidate/lib/validators'
 
   export default {
     name: 'Form',
@@ -48,6 +52,14 @@
           description: ""
         },
         methodSave: "new"
+      }
+    },
+    validations: {
+      form: {
+        subject: {
+          required,
+          minLength: minLength(2)
+        }
       }
     },
     created() {
@@ -73,6 +85,14 @@
 
         localStorage.setItem("tasks", JSON.stringify(tasks))
         this.$router.push({ name: "list" })
+      }
+    },
+    computed: {
+      getValidation() {
+        if(this.$v.form.subject.$dirty === false) {
+          return null
+        }
+        return !this.$v.form.subject.$error
       }
     }
   }
